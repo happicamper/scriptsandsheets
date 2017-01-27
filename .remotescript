@@ -1,0 +1,31 @@
+#!/bin/bash
+# Mac desktop notification script
+# currently compatible on OS X El Capitan 10.11.x
+while :
+    do
+sleep 1
+currentday=$(date | awk '{print $2,$3}')
+ipadd=$(tail -1 /var/log/remote.log | awk '{print "IP address:",$5}' )
+vnclogct=$(cat /var/log/remote.log | grep "Screen Sharing" | grep "$currentday" | wc -l )
+sshlogct=$(cat /var/log/remote.log | grep "SSH" | grep "$currentday" |wc -l )
+currentvnc=$(cat /var/log/system.log | grep "SUCCEEDED" | grep "screensharingd" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$9=$10=$12=$13=$16=$17=$18=""; print $0,"Protocol:Screen Sharing"}' | wc -l)
+currentssh=$(cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$10=$12=$11=$13=$14="";print $0,"Protocol:SSH"}' | wc -l )
+if [  $currentvnc -gt $vnclogct  ]; then
+  diffvnc=`expr $currentvnc - $vnclogct`
+  cat /var/log/system.log | grep "SUCCEEDED" | grep "screensharingd" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$9=$10=$12=$13=$16=$17=$18=""; print $0,"Protocol:Screen Sharing"}' | tail -n $diffvnc >> /var/log/remote.log
+  uservnc=$(cat /var/log/system.log | grep "SUCCEEDED" | grep "screensharingd" | grep "$currentday" | awk '{print $11}'| tail -n $diffvnc )
+  echo "$ipadd has connected into your machine through Screen sharing"
+  osascript -e 'display notification "'"$ipadd"' has logged into your machine using '"$uservnc"' account" with title "Remote connection: Screen Sharing!"'
+else
+   echo "Waiting for new vnc connection......"
+fi
+if [ $currentssh -gt $sshlogct ]; then
+  diffssh=`expr $currentssh - $sshlogct`
+  cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$10=$12=$13=$14="";print $0,"Protocol:SSH"}' | tail -n $diffssh >> /var/log/remote.log
+  userssh=$(cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{print $9}' | tail -n $diffssh )
+  echo "$ipadd has connected into your machine through SSH"
+  osascript -e 'display notification "'"$ipadd"' has logged into your machine using '"$userssh"' account" with title "Remote connection: SSH!"'
+else
+  echo "Waiting for new ssh connection......."
+fi
+done
