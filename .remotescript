@@ -1,5 +1,4 @@
 #!/bin/bash
-# Mac desktop notification script
 # currently compatible on OS X El Capitan 10.11.x
 while :
     do
@@ -21,7 +20,7 @@ else
 fi
 if [ $currentssh -gt $sshlogct ]; then
   diffssh=`expr $currentssh - $sshlogct`
-  cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$10=$12=$13=$14="";print $0,"Protocol:SSH"}' | tail -n $diffssh >> /var/log/remote.log
+  cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{$4=$5=$6=$7=$8=$12=$13=$14="";print $0,"Protocol:SSH"}' |sed s/from/"Address:"/ | tail -n $diffssh >> /var/log/remote.log
   userssh=$(cat /var/log/system.log | grep "sshd" | grep "Accepted" | grep "$currentday" | awk '{print $9}' | tail -n $diffssh )
   echo "$ipadd has connected into your machine through SSH"
   osascript -e 'display notification "'"$ipadd"' has logged into your machine using '"$userssh"' account" with title "Remote connection: SSH!"'
