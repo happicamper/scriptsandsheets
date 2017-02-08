@@ -1,0 +1,17 @@
+#!/bin/bash
+# script for deploying remote management
+read -p 'Username of the node: ' nodeuser
+read -p 'IP address of the node: ' nodeip
+rsync -arvz /opt/scripts/notif "$nodeuser"@"$nodeip":/Users/Shared/
+
+# make the cutomized log for remote management
+echo "Creating remote log"
+ssh -t "$nodeuser"@"$nodeip" " \
+sudo touch /var/log/remote.log && \
+sudo chown root:localaccounts /var/log/remote.log && \
+sudo chmod 775 /var/log/remote.log && \
+sudo cp /Users/Shared/notif/com.remote.plist /Library/LaunchAgents/ && \
+sudo chown root:wheel /Library/LaunchAgents/com.remote.plist && \
+sudo chmod 644 /Library/LaunchAgents/com.remote.plist && \
+sudo launchctl load /Library/LaunchAgents/com.remote.plist && \
+sudo launchctl start com.remote.plist "
