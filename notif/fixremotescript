@@ -5,6 +5,8 @@ while :
 sleep 1
 
 # Date for checking latest logins
+#currentday=$(date | awk '{print $2,$3}')
+
 currentday=$(date | cut -d " " -f 2-4)
 echo ""Date: "$currentday"""
 

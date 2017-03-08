@@ -2,7 +2,11 @@
 # script for deploying remote management
 read -p 'Username of the node: ' nodeuser
 read -p 'IP address of the node: ' nodeip
-rsync -arvz /opt/scripts/notif "$nodeuser"@"$nodeip":/Users/Shared/
+if rsync -arvz /opt/scripts/notif "$nodeuser"@"$nodeip":/Users/Shared/ ; then
+  echo "transfer successful!"
+else
+  echo "existing "notif" folder"
+fi
 
 # make the cutomized log for remote management
 echo "Creating remote log"
@@ -14,4 +18,6 @@ sudo cp /Users/Shared/notif/com.remote.plist /Library/LaunchAgents/ && \
 sudo chown root:wheel /Library/LaunchAgents/com.remote.plist && \
 sudo chmod 644 /Library/LaunchAgents/com.remote.plist && \
 sudo launchctl load /Library/LaunchAgents/com.remote.plist && \
-sudo launchctl start com.remote.plist "
+sudo launchctl start com.remote.plist \
+postfix \
+exit "
