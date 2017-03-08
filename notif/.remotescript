@@ -36,7 +36,7 @@ if [  $currentvnc -gt $vnclogct  ]; then
   userip=$(cat /var/log/system.log | grep "SUCCEEDED" | grep "screensharingd" | awk -F ':' '{print $11}' | tail -n $diffvnc)
   echo "$userip has connected into your machine through Screen sharing"
   osascript -e 'display notification "'"$userip"' has logged into your machine using '"$uservnc"' account" with title "Remote connection: Screen Sharing!"'
-  echo "$userip has connected to your machine ("$localip") using $uservnc account" | mail -s "Connection Alert: Screen Sharing" gilroy.toledano@toro.io
+  echo "$userip has connected to a machine ("$localip") using $uservnc account" | mail -s "Connection Alert: Screen Sharing" machines.toro@gmail.com
 else
    echo "Waiting for new vnc connection......"
 fi
@@ -49,7 +49,7 @@ if [ $currentssh -gt $sshlogct ]; then
   userip1=$(cat /var/log/system.log | grep "sshd" | grep "Accepted" | awk -F ' ' '{print $11}' | tail -n $diffssh)
   echo "$userip1 has connected into your machine through SSH"
   osascript -e 'display notification "'"$userip1"' has logged into your machine using '"$userssh"' account" with title "Remote connection: SSH!"'
-  echo "$userip1 has connected to your machine ("$localip") using $userssh account" | mail -s "Connection Alert: SSH" gilroy.toledano@toro.io
+  echo "$userip1 has connected to a machine ("$localip") using $userssh account" | mail -s "Connection Alert: SSH" machines.toro@gmail.com
 else
   echo "Waiting for new ssh connection......."
 fi
