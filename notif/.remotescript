@@ -5,7 +5,7 @@ while :
 sleep 1
 
 # Date for checking latest logins
-currentday=$(date | cut -d " " -f 2-4)
+currentday=$(date | cut -d " " -f 2-3)
 echo ""Date: "$currentday"""
 
 # vnc count in log file
